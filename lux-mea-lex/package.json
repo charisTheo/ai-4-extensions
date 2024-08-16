@@ -8,6 +8,7 @@
     "preview": "vite preview",
     "lint": "eslint src/**/*.js src/**/*.jsx"
   },
+  "type": "module",
   "dependencies": {
     "@mdui/icons": "^1.0.2",
     "mdui": "^2.1.2",
@@ -27,5 +28,31 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "vite": "^2.9.15",
     "vite-plugin-eslint": "^1.8.1"
+  },
+  "eslintConfig": {
+    "extends": [
+      "airbnb",
+      "plugin:react/recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "ecmaFeatures": {
+        "jsx": true
+      },
+      "sourceType": "module"
+    },
+    "env": {
+      "browser": true,
+      "es2021": true,
+      "es6": true
+    },
+    "rules": {
+      "import/extensions": 0,
+      "no-trailing-spaces": 2,
+      "no-unused-vars": 1,
+      "no-console": 0,
+      "no-extraneous-dependencies": 0,
+      "padded-blocks": 0
+    }
   }
 }

@@ -14,6 +14,7 @@ mdui-layout-main,
   height: 100%;
 }
 
+mdui-snackbar,
 button {
   font-weight: 700;
 }
@@ -24,4 +25,14 @@ mdui-layout-main {
   align-items: center;
   justify-content: center;
   gap: 1rem;
+}
+
+mdui-snackbar.success {
+  --mdui-color-inverse-surface: 76 175 80;
+  --mdui-color-inverse-on-surface: var(--mdui-color-inverse-on-surface-light);
+}
+
+mdui-snackbar.error {
+  --mdui-color-inverse-surface: 244, 67, 54;
+  --mdui-color-inverse-on-surface: var(--mdui-color-inverse-on-surface-light);
 }
