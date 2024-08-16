@@ -8,14 +8,14 @@
     },
     "permissions": ["sidePanel", "scripting", "activeTab", "notifications"],
     "side_panel": {
-      "default_path": "sidepanel/index.html"
+      "default_path": "index.html"
     },
     "action": {
       "default_title": "Lux Mea Lex"
     },
     "content_scripts": [
     {
-      "js": ["scripts/index.js"],
+      "js": ["content_scripts/index.js"],
       "matches": [ "https://*/*", "https://*/" ]
     }
   ]

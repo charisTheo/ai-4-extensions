@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "airbnb",
+    "plugin:react/recommended"
+  ],
+  "rules": {
+    "import/extensions": "never",
+    "no-trailing-spaces": "error"
+  }
+}
