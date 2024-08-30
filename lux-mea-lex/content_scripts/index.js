@@ -1,30 +1,90 @@
 /* eslint-disable no-undef */
 import './mdui.css';
 
+const CONTAINER_ID = 'lux-mea-lex-container';
+const CONTAINER_ID_SELECTOR = `#${CONTAINER_ID}`;
+
+const BUTTON_CSS_TEXT = 'background-color: rgb(var(--mdui-color-primary-container)); color: rgb(var(--mdui-color-primary))';
+
+const iconsCss = `
+@font-face {
+  font-family: 'Material Icons Outlined';
+  font-style: normal;
+  font-weight: 400;
+  src: url(${chrome.runtime.getURL('material-icons.woff2')}) format('woff2');
+}
+.material-icons-outlined {
+  font-family: 'Material Icons Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+`;
+const iconsStyle = document.createElement('style');
+iconsStyle.innerHTML = iconsCss;
+document.head.appendChild(iconsStyle);
+
+function showSnackbar(content) {
+  const snackbar = document.createElement('mdui-snackbar');
+  snackbar.innerHTML += content;
+  snackbar.placement = 'top';
+  snackbar.open = true;
+  document.body.appendChild(snackbar);
+}
+
 function onSaveClick(selection) {
   const text = selection.toString();
   chrome.storage.local.set({ text }, () => {
-    console.log('Selection saved: ');
+    console.log(`Selection saved: ${text}`);
+    showSnackbar(`Saved: "${text}"`);
   });
 }
 
+function onCloseClick(e) {
+  console.log('onCloseClick');
+}
+
+function onExplainClick(selection) {
+  const text = selection.toString();
+}
+
 function createContextMenu(selection, coords) {
-  document.querySelector('#lux-mea-lex-container')?.remove();
+  document.querySelector(CONTAINER_ID_SELECTOR)?.remove();
+
+  const closeButton = document.createElement('mdui-segmented-button');
+  closeButton.addEventListener('click', onCloseClick);
+  closeButton.innerHTML += '<mdui-icon slot="icon" name="close--outlined"></mdui-icon>';
+  closeButton.style.cssText += BUTTON_CSS_TEXT;
+
+  const saveButton = document.createElement('mdui-segmented-button');
+  saveButton.addEventListener('click', () => onSaveClick(selection));
+  saveButton.innerHTML += 'Save';
+  saveButton.style.cssText += BUTTON_CSS_TEXT;
+
+  const explainButton = document.createElement('mdui-segmented-button');
+  explainButton.addEventListener('click', () => onExplainClick(selection));
+  explainButton.innerHTML += 'Explain';
+  explainButton.style.cssText += BUTTON_CSS_TEXT;
 
   const container = document.createElement('div');
-  container.innerHTML = `
-  <mdui-segmented-button-group>
-    <mdui-segmented-button style="background-color: rgb(var(--mdui-color-primary-container)); color: rgb(var(--mdui-color-primary))">
-      Save
-    </mdui-segmented-button>
-    <mdui-segmented-button style="background-color: rgb(var(--mdui-color-primary-container)); color: rgb(var(--mdui-color-primary))">
-      Explain
-    </mdui-segmented-button>
-    <mdui-segmented-button style="background-color: rgb(var(--mdui-color-primary-container)); color: rgb(var(--mdui-color-primary))">
-      Close
-    </mdui-segmented-button>
-  </mdui-segmented-button-group>
-  `;
+  const buttonGroup = document.createElement('mdui-segmented-button-group');
+
+  buttonGroup.append(
+    saveButton,
+    explainButton,
+    closeButton,
+  );
+  container.appendChild(buttonGroup);
+
   // TODO promote to top layer
   container.style.cssText += `
     position: absolute;
@@ -33,13 +93,12 @@ function createContextMenu(selection, coords) {
     z-index: 9999;
   `;
 
-  container.id = 'lux-mea-lex-container';
+  container.id = CONTAINER_ID;
   return container;
 }
 
 function showContextMenu(selection, coords) {
   // https://www.mdui.org/en/docs/2/components/icon#usage-material-icons
-  /* <mdui-icon src="https://fonts.gstatic.com/s/i/materialicons/search/v17/24px.svg"></mdui-icon> */
   const contextMenu = createContextMenu(selection, coords);
   document.body.appendChild(contextMenu);
 }
@@ -47,12 +106,18 @@ function showContextMenu(selection, coords) {
 document.onmouseup = (e) => {
   const selection = window.getSelection();
 
-  if (selection?.type !== 'Range') {
-    document.querySelector('#lux-mea-lex-container')?.remove();
-    return;
-  }
+  setTimeout(() => {
+    if (selection?.type !== 'Range'
+      || !selection.toString()
+      || e.target?.type === 'button' // close if clicked on a button - including context menu buttons
+      || e.target?.parentElement?.type === 'button' // clicking on icon of an icon button, the target element is the icon - look for parent button
+    ) {
+      document.querySelector(CONTAINER_ID_SELECTOR)?.remove();
+      return;
+    }
 
-  if (selection?.type === 'Range') {
-    showContextMenu(selection, { x: e.clientX, y: e.clientY });
-  }
+    if (selection?.type === 'Range') {
+      showContextMenu(selection, { x: e.pageX, y: e.pageY });
+    }
+  }, 0);
 };

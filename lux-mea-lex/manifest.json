@@ -26,8 +26,17 @@
         "content_scripts/mdui.global.js"
       ],
       "matches": [
-        "https://*/*",
-        "https://*/"
+        "<all_urls>"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "material-icons.woff2"
+      ],
+      "matches": [
+        "<all_urls>"
       ]
     }
   ]
