@@ -43,9 +43,8 @@ function showSnackbar(content) {
 
 function onSaveClick(selection) {
   const text = selection.toString();
-  chrome.storage.local.set({ text }, () => {
-    console.log(`Selection saved: ${text}`);
-    showSnackbar(`Saved: "${text}"`);
+  chrome.storage.local.set({ selectionToSave: text }, () => {
+    chrome.runtime.sendMessage({ action: 'openSidePanel' });
   });
 }
 
@@ -55,6 +54,9 @@ function onCloseClick(e) {
 
 function onExplainClick(selection) {
   const text = selection.toString();
+  chrome.storage.local.set({ selectionToExplain: text }, () => {
+    chrome.runtime.sendMessage({ action: 'openSidePanel' });
+  });
 }
 
 function createContextMenu(selection, coords) {
